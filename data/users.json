@@ -8,14 +8,6 @@
         "address": "Headquarters"
     },
     {
-        "username": "jules_server",
-        "password": "testpass",
-        "role": "client",
-        "fullName": "Jules Server Test",
-        "address": "Server Lane 123",
-        "id": "1001"
-    },
-    {
         "username": "bill_test",
         "password": "pass",
         "role": "client",

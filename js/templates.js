@@ -328,3 +328,24 @@ app.templates['admin-clients'] = `<!-- Admin Clients List -->
         <% }); %>
     </tbody>
 </table>`;
+
+app.templates['add-to-cart-modal'] = `<!-- Add to Cart Modal -->
+<div class="modal-overlay">
+    <div class="modal-content">
+        <h3>Add to Cart</h3>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="<%= image %>" alt="<%= name %>" style="max-height: 150px; object-fit: contain;">
+            <h4><%= name %></h4>
+        </div>
+        <form id="add-to-cart-form">
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" id="cart-qty" value="1" min="1" max="<%= stock %>" required>
+            </div>
+            <div class="form-buttons">
+                <button type="button" class="btn btn-secondary cancel-modal">Cancel</button>
+                <button type="submit" class="btn btn-success">Continue Order</button>
+            </div>
+        </form>
+    </div>
+</div>`;

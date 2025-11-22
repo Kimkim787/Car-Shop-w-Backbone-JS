@@ -1,29 +1,50 @@
 [
     {
-        "userId": "1003",
-        "date": "2025-11-22T13:15:39.820Z",
-        "items": [
-            {
-                "productId": "p1",
-                "name": "Running Shoes",
-                "price": 99.99,
-                "quantity": 2
-            },
-            {
-                "productId": "p2",
-                "name": "Stylish Shirt",
-                "price": 29.5,
-                "quantity": 1
-            },
-            {
-                "productId": "p3",
-                "name": "Leather Bag",
-                "price": 149,
-                "quantity": 1
-            }
-        ],
-        "total": 378.48,
-        "cardDetails": "123123 | 2323 | 2323",
-        "id": "1000"
+        "id": "1000",
+        "name": "Mitsubishi Mirage G4",
+        "description": "Mistubishi Car",
+        "price": 160000.0,
+        "stock": 2,
+        "image": "imgs/mitsubishi_mirage_g4.jpg"
+    },
+    {
+        "id": "1001",
+        "name": "SUV 7",
+        "description": "SUV with 7 seats",
+        "price": 300000.0,
+        "stock": 5,
+        "image": "imgs/suv_7_seater.png"
+    },
+    {
+        "id": "1002",
+        "name": "BMW M4",
+        "description": "BMW Car",
+        "price": 140000.0,
+        "stock": 7,
+        "image": "imgs/bmw_m4.jpg"
+    },
+    {
+        "id": "1003",
+        "name": "Maito Porsche 911",
+        "description": "Porsche Race Car",
+        "price": 900000.0,
+        "stock": 1,
+        "image": "imgs/maito_porsche_911.jpg"
+    },
+    {
+        "id": "1004",
+        "name": "MG ZS SUV",
+        "description": "SUV Car",
+        "price": 200000.0,
+        "stock": 3,
+        "image": "imgs/mg_zs_suv.jpg"
+    },
+    {
+        "id": "1005",
+        "name": "EV",
+        "description": "Electric Car",
+        "price": 60000.0,
+        "stock": 100,
+        "image": "imgs/ev.jpg"
     }
 ]

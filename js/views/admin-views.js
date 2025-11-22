@@ -61,7 +61,30 @@ app.ProductFormView = app.BaseView.extend({
 
     events: {
         'submit #product-form': 'saveProduct',
-        'click .cancel-modal': 'closeModal'
+        'click .cancel-modal': 'closeModal',
+        'input #prod-price': 'validatePrice',
+        'input #prod-stock': 'validateStock'
+    },
+
+    validatePrice: function(e) {
+         var val = $(e.target).val();
+         // Remove non digits/dots
+         val = val.replace(/[^0-9.]/g, '');
+
+         // Ensure only one dot
+         var parts = val.split('.');
+         if (parts.length > 2) {
+             val = parts[0] + '.' + parts.slice(1).join('');
+         }
+
+         $(e.target).val(val);
+    },
+
+    validateStock: function(e) {
+         // Integer only
+         var val = $(e.target).val();
+         val = val.replace(/\D/g, '');
+         $(e.target).val(val);
     },
 
     render: function() {

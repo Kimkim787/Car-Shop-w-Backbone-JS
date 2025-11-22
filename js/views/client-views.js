@@ -5,14 +5,24 @@ app.ProductListView = app.BaseView.extend({
     className: 'product-list-view',
     template: function() { return app.templateLoader.get('product-list'); },
     itemTemplate: function() { return app.templateLoader.get('product-item'); },
+    modalTemplate: function() { return app.templateLoader.get('add-to-cart-modal'); },
 
     initialize: function() {
         this.listenTo(app.products, 'reset sync', this.render);
     },
 
     events: {
-        'click .add-to-cart': 'addToCart',
+        'click .add-to-cart': 'showAddToCartModal',
+        'click .cancel-modal': 'closeModal',
+        'submit #add-to-cart-form': 'addToCart',
+        'input #cart-qty': 'validateQty',
         'click #logout-btn': 'logout' // If we add a header later
+    },
+
+    validateQty: function(e) {
+        var val = $(e.target).val();
+        val = val.replace(/\D/g, '');
+        $(e.target).val(val);
     },
 
     render: function() {
@@ -36,36 +46,52 @@ app.ProductListView = app.BaseView.extend({
         return this;
     },
 
-    addToCart: function(e) {
+    showAddToCartModal: function(e) {
         var productName = $(e.target).closest('.product-card').find('h3').text();
-        var product = app.products.findWhere({name: productName}); // Finding by name for simplicity, id is safer but name works here
+        this.currentProduct = app.products.findWhere({name: productName});
 
-        if (product && product.get('stock') > 0) {
-            // Add to session cart
+        if (this.currentProduct && this.currentProduct.get('stock') > 0) {
+            this.$el.append(this.modalTemplate()(this.currentProduct.toJSON()));
+        }
+    },
+
+    closeModal: function() {
+        this.$('.modal-overlay').remove();
+        this.currentProduct = null;
+    },
+
+    addToCart: function(e) {
+        e.preventDefault();
+        var qty = parseInt($('#cart-qty').val(), 10);
+        var product = this.currentProduct;
+
+        if (product && qty > 0 && qty <= product.get('stock')) {
+             // Add to session cart
             var cart = app.router.session.cart;
             var existingItem = _.findWhere(cart, {productId: product.id});
 
             // Check if we are exceeding stock in cart
             var currentQtyInCart = existingItem ? existingItem.quantity : 0;
-            if (currentQtyInCart + 1 > product.get('stock')) {
+            if (currentQtyInCart + qty > product.get('stock')) {
                 alert("Cannot add more. Stock limit reached.");
                 return;
             }
 
             if (existingItem) {
-                existingItem.quantity += 1;
+                existingItem.quantity += qty;
             } else {
                 cart.push({
                     productId: product.id,
                     name: product.get('name'),
                     price: product.get('price'),
-                    quantity: 1
+                    quantity: qty
                 });
             }
 
             // Save cart
             localStorage.setItem('cart_' + app.router.session.user.id, JSON.stringify(cart));
 
+            this.closeModal();
             this.render(); // Re-render to update cart count
         }
     }
@@ -107,7 +133,10 @@ app.CheckoutView = app.BaseView.extend({
 
     events: {
         'submit #checkout-form': 'onCheckout',
-        'change #saved-card-select': 'onCardSelect'
+        'change #saved-card-select': 'onCardSelect',
+        'input #card-number': 'validateCardNumber',
+        'input #card-expiry': 'validateExpiry',
+        'input #card-cvv': 'validateCVV'
     },
 
     render: function() {
@@ -138,6 +167,43 @@ app.CheckoutView = app.BaseView.extend({
             $('#card-expiry').val('');
             $('#card-cvv').val('');
         }
+    },
+
+    validateCardNumber: function(e) {
+        var val = $(e.target).val();
+        val = val.replace(/\D/g, '');
+        if (val.length > 16) val = val.substring(0, 16);
+        $(e.target).val(val);
+    },
+
+    validateExpiry: function(e) {
+        var val = $(e.target).val();
+
+        // Remove non-digits/slash
+        val = val.replace(/[^\d]/g, '');
+
+        // Add slash automatically
+        if (val.length >= 2) {
+             // Validate month
+             var month = parseInt(val.substring(0, 2));
+             if (month > 12) month = 12;
+             if (month < 1) month = 1; // though strict typing might make this weird, let's just leave 01-12
+
+             // We can't easily rewrite the user's input for logic like '13' -> '12' while they type without being annoying.
+             // Better strategy: Just format with slash
+             val = val.substring(0, 2) + '/' + val.substring(2);
+        }
+
+        if (val.length > 5) val = val.substring(0, 5);
+
+        $(e.target).val(val);
+    },
+
+    validateCVV: function(e) {
+        var val = $(e.target).val();
+        val = val.replace(/\D/g, '');
+        if (val.length > 4) val = val.substring(0, 4);
+        $(e.target).val(val);
     },
 
     onCheckout: function(e) {
@@ -234,7 +300,10 @@ app.BillingView = app.BaseView.extend({
     template: function() { return app.templateLoader.get('billing'); },
 
     events: {
-        'submit #billing-form': 'saveMethod'
+        'submit #billing-form': 'saveMethod',
+        'input #bill-card-number': 'validateCardNumber',
+        'input #bill-card-expiry': 'validateExpiry',
+        'input #bill-card-cvv': 'validateCVV'
     },
 
     render: function() {
@@ -247,6 +316,36 @@ app.BillingView = app.BaseView.extend({
 
         this.$el.prepend('<div class="nav-bar"><a href="#profile">Back to Profile</a> | <a href="#logout">Logout</a></div>');
         return this;
+    },
+
+    validateCardNumber: function(e) {
+        var val = $(e.target).val();
+        // Remove non-digits
+        val = val.replace(/\D/g, '');
+        // Limit to 16
+        if (val.length > 16) val = val.substring(0, 16);
+        $(e.target).val(val);
+    },
+
+    validateExpiry: function(e) {
+        var val = $(e.target).val();
+        // Remove non-digits
+        val = val.replace(/[^\d]/g, '');
+
+        // Add slash
+        if (val.length >= 2) {
+            val = val.substring(0, 2) + '/' + val.substring(2);
+        }
+
+        if (val.length > 5) val = val.substring(0, 5);
+        $(e.target).val(val);
+    },
+
+    validateCVV: function(e) {
+        var val = $(e.target).val();
+        val = val.replace(/\D/g, '');
+        if (val.length > 4) val = val.substring(0, 4);
+        $(e.target).val(val);
     },
 
     saveMethod: function(e) {
