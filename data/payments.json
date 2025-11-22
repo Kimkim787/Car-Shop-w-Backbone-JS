@@ -1,0 +1,18 @@
+[
+    {
+        "userId": "1002",
+        "alias": "My Visa",
+        "cardNumber": "4242 4242 4242 4242",
+        "cardExpiry": "12/30",
+        "cardCvv": "123",
+        "id": "1000"
+    },
+    {
+        "userId": "1003",
+        "alias": "lskjeof",
+        "cardNumber": "123123",
+        "cardExpiry": "2323",
+        "cardCvv": "2323",
+        "id": "1001"
+    }
+]

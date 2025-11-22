@@ -1,0 +1,20 @@
+<!-- Admin Clients List -->
+<h2>Registered Clients</h2>
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Username</th>
+            <th>Address</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% _.each(clients, function(client) { %>
+            <tr>
+                <td><%= client.fullName %></td>
+                <td><%= client.username %></td>
+                <td><%= client.address %></td>
+            </tr>
+        <% }); %>
+    </tbody>
+</table>

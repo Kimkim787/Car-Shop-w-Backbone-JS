@@ -1,0 +1,34 @@
+[
+    {
+        "id": "admin-id",
+        "username": "admin",
+        "password": "password123",
+        "role": "admin",
+        "fullName": "Administrator",
+        "address": "Headquarters"
+    },
+    {
+        "username": "jules_server",
+        "password": "testpass",
+        "role": "client",
+        "fullName": "Jules Server Test",
+        "address": "Server Lane 123",
+        "id": "1001"
+    },
+    {
+        "username": "bill_test",
+        "password": "pass",
+        "role": "client",
+        "fullName": "Billing Tester",
+        "address": "Bill Lane",
+        "id": "1002"
+    },
+    {
+        "username": "Clement.87",
+        "password": "Clement.8",
+        "role": "client",
+        "fullName": "Clement Alcantara",
+        "address": "Nalhub, Dalaguete, Cebu",
+        "id": "1003"
+    }
+]

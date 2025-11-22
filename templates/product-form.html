@@ -1,0 +1,32 @@
+<!-- Product Form (Add/Edit) -->
+<div class="modal-overlay">
+    <div class="modal-content">
+        <h3><%= id ? 'Edit Product' : 'Add New Product' %></h3>
+        <form id="product-form">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="prod-name" value="<%= name %>" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="prod-desc" required><%= description %></textarea>
+            </div>
+            <div class="form-group">
+                <label>Price</label>
+                <input type="number" step="0.01" id="prod-price" value="<%= price %>" required>
+            </div>
+            <div class="form-group">
+                <label>Stock</label>
+                <input type="number" id="prod-stock" value="<%= stock %>" required>
+            </div>
+            <div class="form-group">
+                <label>Image URL/Path</label>
+                <input type="text" id="prod-image" value="<%= image %>" placeholder="imgs/item1.svg" required>
+            </div>
+            <div class="form-buttons">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary cancel-modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

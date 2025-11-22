@@ -1,0 +1,52 @@
+<!-- Profile Template -->
+<h2>My Profile</h2>
+<div class="profile-container">
+    <form id="profile-form">
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="profile-fullname" value="<%= fullName %>" required>
+        </div>
+        <div class="form-group">
+            <label>Address</label>
+            <textarea id="profile-address" required><%= address %></textarea>
+        </div>
+        <button type="submit" class="btn">Update Profile</button>
+        <p class="success-message" style="display:none; color:green;">Profile updated!</p>
+    </form>
+    <br>
+    <a href="#billing" class="btn btn-secondary">Manage Billing Methods</a>
+</div>
+
+<hr>
+
+<h3>Purchase History</h3>
+<div class="history-container">
+    <% if (orders.length > 0) { %>
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Items</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% _.each(orders, function(order) { %>
+                    <tr>
+                        <td><%= new Date(order.date).toLocaleString() %></td>
+                        <td>$<%= order.total.toFixed(2) %></td>
+                        <td>
+                            <ul>
+                            <% _.each(order.items, function(item) { %>
+                                <li><%= item.name %> (x<%= item.quantity %>)</li>
+                            <% }); %>
+                            </ul>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>No past purchases.</p>
+    <% } %>
+</div>

@@ -1,0 +1,43 @@
+<!-- Billing Template -->
+<h2>Manage Billing</h2>
+<div class="billing-container">
+    <div class="saved-methods">
+        <h3>Saved Payment Methods</h3>
+        <% if (methods.length > 0) { %>
+            <ul class="method-list">
+                <% _.each(methods, function(method) { %>
+                    <li>
+                        <strong><%= method.alias %></strong>:
+                        <%= method.cardNumber %> (Exp: <%= method.cardExpiry %>)
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p>No saved payment methods.</p>
+        <% } %>
+    </div>
+
+    <hr>
+
+    <h3>Add New Payment Method</h3>
+    <form id="billing-form">
+        <div class="form-group">
+            <label>Alias (e.g., Personal Visa)</label>
+            <input type="text" id="bill-alias" required>
+        </div>
+        <div class="form-group">
+            <label>Card Number</label>
+            <input type="text" id="bill-card-number" placeholder="1234 5678 9101 1121" required>
+        </div>
+        <div class="form-group">
+            <label>Expiry Date</label>
+            <input type="text" id="bill-card-expiry" placeholder="MM/YY" required>
+        </div>
+        <div class="form-group">
+            <label>CVV</label>
+            <input type="text" id="bill-card-cvv" placeholder="123" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Payment Method</button>
+        <p class="success-message" style="display:none; color:green;">Payment method saved!</p>
+    </form>
+</div>

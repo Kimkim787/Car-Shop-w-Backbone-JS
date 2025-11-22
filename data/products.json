@@ -1,0 +1,29 @@
+[
+    {
+        "userId": "1003",
+        "date": "2025-11-22T13:15:39.820Z",
+        "items": [
+            {
+                "productId": "p1",
+                "name": "Running Shoes",
+                "price": 99.99,
+                "quantity": 2
+            },
+            {
+                "productId": "p2",
+                "name": "Stylish Shirt",
+                "price": 29.5,
+                "quantity": 1
+            },
+            {
+                "productId": "p3",
+                "name": "Leather Bag",
+                "price": 149,
+                "quantity": 1
+            }
+        ],
+        "total": 378.48,
+        "cardDetails": "123123 | 2323 | 2323",
+        "id": "1000"
+    }
+]
