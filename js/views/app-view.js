@@ -63,27 +63,21 @@ app.LoginView = app.BaseView.extend({
 
     onLogin: function(e) {
         e.preventDefault();
-        var username = $('#username').val();
+        var email = $('#email').val();
         var password = $('#password').val();
+        var self = this;
 
-        var user = app.users.findWhere({username: username, password: password});
-
-        if (user) {
-            app.router.session.user = user;
-            localStorage.setItem('loggedInUserId', user.id);
-
-            // Restore cart
-            var cart = localStorage.getItem('cart_' + user.id);
-            if (cart) {
-                app.router.session.cart = JSON.parse(cart);
-            } else {
-                app.router.session.cart = [];
-            }
-
-            app.router.checkAuth();
-        } else {
-            this.$('.error-message').text('Invalid username or password').show();
-        }
+        firebase.auth().signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Signed in
+                var user = userCredential.user;
+                // app.router.checkAuth() will be called by onAuthStateChanged
+            })
+            .catch((error) => {
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                self.$('.error-message').text(errorMessage).show();
+            });
     }
 });
 
@@ -103,28 +97,42 @@ app.RegisterView = app.BaseView.extend({
 
     onRegister: function(e) {
         e.preventDefault();
-        var username = $('#reg-username').val();
+        var email = $('#reg-email').val();
         var password = $('#reg-password').val();
         var fullname = $('#reg-fullname').val();
         var address = $('#reg-address').val();
+        var self = this;
 
-        if (app.users.findWhere({username: username})) {
-            this.$('.error-message').text('Username already exists').show();
-            return;
-        }
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Signed in
+                var user = userCredential.user;
 
-        var newUser = app.users.create({
-            username: username,
-            password: password,
-            fullName: fullname,
-            address: address,
-            role: 'client'
-        });
+                // Create user profile in backend (which saves to Firebase DB)
+                // We use the UID as the ID.
+                var newUserProfile = {
+                    id: user.uid,
+                    username: email, // Legacy field
+                    email: email,
+                    role: 'client',
+                    fullName: fullname,
+                    address: address
+                };
 
-        // Auto login
-        app.router.session.user = newUser;
-        localStorage.setItem('loggedInUserId', newUser.id);
-        app.router.session.cart = [];
-        app.router.checkAuth();
+                app.users.create(newUserProfile, {
+                    wait: true,
+                    success: function() {
+                        // Profile created
+                    },
+                    error: function(model, response) {
+                        console.error("Failed to create profile", response);
+                    }
+                });
+            })
+            .catch((error) => {
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                self.$('.error-message').text(errorMessage).show();
+            });
     }
 });

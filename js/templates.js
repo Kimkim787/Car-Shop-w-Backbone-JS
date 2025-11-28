@@ -7,8 +7,8 @@ app.templates['login'] = `<!-- Login Template -->
     <h2>Login</h2>
     <form id="login-form">
         <div class="form-group">
-            <label>Username</label>
-            <input type="text" id="username" required>
+            <label>Email</label>
+            <input type="email" id="email" required>
         </div>
         <div class="form-group">
             <label>Password</label>
@@ -25,8 +25,8 @@ app.templates['register'] = `<!-- Register Template -->
     <h2>Register</h2>
     <form id="register-form">
         <div class="form-group">
-            <label>Username</label>
-            <input type="text" id="reg-username" required>
+            <label>Email</label>
+            <input type="email" id="reg-email" required>
         </div>
         <div class="form-group">
             <label>Password</label>
