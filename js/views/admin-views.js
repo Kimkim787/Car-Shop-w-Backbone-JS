@@ -49,7 +49,21 @@ app.AdminProductListView = app.BaseView.extend({
         if (confirm('Are you sure you want to delete this product?')) {
             var id = $(e.target).closest('tr').data('id');
             var product = app.products.get(id);
-            product.destroy();
+
+            if (firebase.auth().currentUser) {
+                firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+                    // Override Backbone destroy to include headers
+                    product.destroy({
+                        headers: {
+                            'Authorization': 'Bearer ' + idToken
+                        },
+                        wait: true, // Wait for server success
+                        error: function(model, xhr) {
+                             alert('Error deleting product: ' + (xhr.responseJSON ? xhr.responseJSON.error : xhr.statusText));
+                        }
+                    });
+                });
+            }
         }
     }
 });
@@ -116,25 +130,37 @@ app.ProductFormView = app.BaseView.extend({
         var method = this.model ? 'PUT' : 'POST';
         var url = this.model ? '/api/products/' + this.model.id : '/api/products';
 
-        $.ajax({
-            url: url,
-            type: method,
-            data: formData,
-            processData: false,  // tell jQuery not to process the data
-            contentType: false,  // tell jQuery not to set contentType
-            success: function(data) {
-                if (self.model) {
-                    self.model.set(data);
-                } else {
-                    app.products.add(data);
-                }
-                self.closeModal();
-                app.products.fetch(); // Refresh list to be safe
-            },
-            error: function() {
-                alert('Error saving product');
-            }
-        });
+        // Get ID Token
+        if (firebase.auth().currentUser) {
+            firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+                $.ajax({
+                    url: url,
+                    type: method,
+                    data: formData,
+                    headers: {
+                        'Authorization': 'Bearer ' + idToken
+                    },
+                    processData: false,  // tell jQuery not to process the data
+                    contentType: false,  // tell jQuery not to set contentType
+                    success: function(data) {
+                        if (self.model) {
+                            self.model.set(data);
+                        } else {
+                            app.products.add(data);
+                        }
+                        self.closeModal();
+                        app.products.fetch(); // Refresh list to be safe
+                    },
+                    error: function(xhr) {
+                        alert('Error saving product: ' + (xhr.responseJSON ? xhr.responseJSON.error : xhr.statusText));
+                    }
+                });
+            }).catch(function(error) {
+                 alert('Authentication error: ' + error.message);
+            });
+        } else {
+            alert('You must be logged in to save products.');
+        }
     },
 
     closeModal: function() {

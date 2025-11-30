@@ -63,27 +63,42 @@ app.LoginView = app.BaseView.extend({
 
     onLogin: function(e) {
         e.preventDefault();
-        var username = $('#username').val();
+        var email = $('#username').val();
         var password = $('#password').val();
+        var self = this;
 
-        var user = app.users.findWhere({username: username, password: password});
+        firebase.auth().signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                var user = userCredential.user;
+                return firebase.database().ref('/users/' + user.uid).once('value');
+            })
+            .then((snapshot) => {
+                var userData = snapshot.val();
+                var backboneUser = new app.User(userData || {});
+                backboneUser.set('id', snapshot.key);
 
-        if (user) {
-            app.router.session.user = user;
-            localStorage.setItem('loggedInUserId', user.id);
+                // Map isAdmin to role if not present, for compatibility
+                if (userData && userData.isAdmin === true) {
+                    backboneUser.set('role', 'admin');
+                } else {
+                    backboneUser.set('role', 'client');
+                }
 
-            // Restore cart
-            var cart = localStorage.getItem('cart_' + user.id);
-            if (cart) {
-                app.router.session.cart = JSON.parse(cart);
-            } else {
-                app.router.session.cart = [];
-            }
+                app.router.session.user = backboneUser;
 
-            app.router.checkAuth();
-        } else {
-            this.$('.error-message').text('Invalid username or password').show();
-        }
+                // Restore cart
+                var cart = localStorage.getItem('cart_' + backboneUser.id);
+                if (cart) {
+                    app.router.session.cart = JSON.parse(cart);
+                } else {
+                    app.router.session.cart = [];
+                }
+
+                app.router.checkAuth();
+            })
+            .catch((error) => {
+                self.$('.error-message').text(error.message).show();
+            });
     }
 });
 
